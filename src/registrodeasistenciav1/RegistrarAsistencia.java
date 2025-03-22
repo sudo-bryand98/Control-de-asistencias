@@ -294,17 +294,28 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-     if(itmregistro.getSelectedItem().equals("ENTRADA")){
-           registrarEntrada();
-        
+     
+        if(txtusuario.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Favor de ingresar un usuario", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+            txtusuario.requestFocus();
         }
-         if(itmregistro.getSelectedItem().equals("SALIDA")){
-            registrarSalida();
-        
+        else if(pscontraseña.getText().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Favor de ingresar su contraseña", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+            pscontraseña.requestFocus();
+        }
+        else if(itmregistro.getSelectedItem().equals("SELECCIONE UNO")){
+            JOptionPane.showMessageDialog(null, "Favor de seleccionar una opción INGRESO O SALIDA de su turno", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
+            itmregistro.requestFocus();
         }
         
-        
-        
+        else{
+            if(itmregistro.getSelectedItem().equals("ENTRADA")){
+                registrarEntrada();            
+            }
+            if(itmregistro.getSelectedItem().equals("SALIDA")){
+                registrarSalida(); 
+            }
+        }            
     }//GEN-LAST:event_btnRegistrarActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
