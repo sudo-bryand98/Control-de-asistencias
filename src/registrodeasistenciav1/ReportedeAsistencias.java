@@ -23,13 +23,13 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         initComponents();
         this.setLocationRelativeTo(null);
         this.setExtendedState(MAXIMIZED_BOTH);
-        llenartabla("DIA");
+        llenartabla();
         jDateChooser1.setDateFormatString("yyyy-MM-dd");
         jDateChooser2.setDateFormatString("yyyy-MM-dd");
     }
- void llenartabla(String valor){
+ void llenartabla(){
         DefaultTableModel modelo = new DefaultTableModel();
-       modelo.addColumn("NO");
+        modelo.addColumn("NO");
         modelo.addColumn("NOMBRE");
         modelo.addColumn("CARGO");
         modelo.addColumn("AREA");
@@ -37,18 +37,16 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         modelo.addColumn("HORA DE SALIDA");
         modelo.addColumn("FECHA");
         modelo.addColumn("HORAS TRABAJADAS HH/MM/SS");
-        modelo.addColumn("PAGO DEL DÍA");
+        modelo.addColumn("PAGO DEL DÍA S/.");
         
 
        tabla_reporte.setModel(modelo); 
         String sql = "";
         
         //SELECT usuarios.nombre, usuarios.cargo, usuarios.area, asistencia.h_entrada, asistencia.h_salida, asistencia.fecha FROM usuarios JOIN asistencia WHERE usuarios.id_usuario = asistencia.id_usuario AND asistencia.id_usuario= usuarios.id_usuario AND asistencia.fecha BETWEEN '11-4-2020' AND '17-4-21'
-         if (cbtipo.getSelectedItem().equals("DIA")) {
-             sql = "SELECT usuarios.nombre, usuarios.cargo, usuarios.area, asistencia.h_entrada, asistencia.h_salida, asistencia.fecha, timediff(h_salida,h_entrada), hour(timediff(h_salida,h_entrada)) * sueldo FROM usuarios JOIN asistencia WHERE usuarios.id_usuario = asistencia.id_usuario AND asistencia.id_usuario= usuarios.id_usuario AND asistencia.fecha LIKE '%"+valor+"%'";
-        } else {
-            sql = "SELECT usuarios.nombre, usuarios.cargo, usuarios.area, asistencia.h_entrada, asistencia.h_salida, asistencia.fecha, timediff(h_salida,h_entrada), hour(timediff(h_salida,h_entrada)) * sueldo FROM usuarios JOIN asistencia WHERE usuarios.id_usuario = asistencia.id_usuario AND asistencia.id_usuario= usuarios.id_usuario AND usuarios.nombre LIKE '%"+valor+"%'";
-        }
+             sql = "SELECT usuarios.nombre, usuarios.cargo, usuarios.area, asistencia.h_entrada, asistencia.h_salida, asistencia.fecha, ifnull(timediff(h_salida,h_entrada), 'no se pudo calcular'), ifnull(hour(timediff(h_salida,h_entrada)) * sueldo, 0) \n" +
+                        "FROM usuarios JOIN asistencia WHERE usuarios.id_usuario = asistencia.id_usuario AND asistencia.id_usuario= usuarios.id_usuario";
+
 
         String[] datos = new String[9];
         try {
@@ -68,6 +66,8 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
                 modelo.addRow(datos);
             }
             tabla_reporte.setModel(modelo);
+            resaltarfilastable resaltar = new resaltarfilastable();
+            tabla_reporte.setDefaultRenderer(Object.class, resaltar);
 
         } catch (SQLException ex) {
             Logger.getLogger(GestiondeUsuarios.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,10 +86,8 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        txtBuscar = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
-        cbtipo = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tabla_reporte = new javax.swing.JTable();
@@ -136,32 +134,17 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(51, 51, 255)), "SELECCIONE Y RELLENE LOS CAMPOS PARA VER E IMPRIMIR  EL REPORTE DE ASISTENCIA QUE REQUIERA", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Yu Gothic UI", 0, 14), new java.awt.Color(51, 51, 255))); // NOI18N
 
-        txtBuscar.setFont(new java.awt.Font("Yu Gothic UI", 1, 18)); // NOI18N
-        txtBuscar.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(204, 204, 204), 1, true));
-        txtBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtBuscarKeyReleased(evt);
-            }
-        });
-
         jLabel4.setBackground(new java.awt.Color(0, 153, 153));
         jLabel4.setFont(new java.awt.Font("Yu Gothic UI", 1, 20)); // NOI18N
         jLabel4.setText("BUSCAR ASISTENCIAS POR:");
 
         jButton1.setBackground(new java.awt.Color(204, 255, 255));
         jButton1.setFont(new java.awt.Font("Yu Gothic UI", 1, 12)); // NOI18N
-        jButton1.setText("BUSCAR");
+        jButton1.setText("MOSTRAR TODO");
         jButton1.setFocusable(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
-            }
-        });
-
-        cbtipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DIA", "NOMBRE" }));
-        cbtipo.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                cbtipoItemStateChanged(evt);
             }
         });
 
@@ -264,43 +247,31 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
                         .addComponent(jButton3)
                         .addGap(18, 18, 18)
                         .addComponent(jButton2))
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel2)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cbtipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1))
-                            .addComponent(jLabel2)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel7)
-                                .addGap(18, 18, 18)
-                                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnbuscar2)))
-                        .addGap(0, 42, Short.MAX_VALUE)))
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel7)
+                        .addGap(18, 18, 18)
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnbuscar2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(cbtipo, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jLabel4)
-                    .addComponent(txtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(17, 17, 17)
+                .addComponent(jLabel4)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jDateChooser2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -309,7 +280,8 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
                             .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6)
                             .addComponent(jLabel5)
-                            .addComponent(btnbuscar2)))
+                            .addComponent(btnbuscar2)
+                            .addComponent(jButton1)))
                     .addComponent(jDateChooser1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
@@ -357,17 +329,9 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void txtBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarKeyReleased
-        llenartabla(txtBuscar.getText());
-    }//GEN-LAST:event_txtBuscarKeyReleased
-
-    private void cbtipoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbtipoItemStateChanged
-        // TODO add your handling code here:
-        llenartabla(txtBuscar.getText());
-    }//GEN-LAST:event_cbtipoItemStateChanged
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        llenartabla(txtBuscar.getText());
+        llenartabla();
+        txtMonto.setText("");
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -390,6 +354,8 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         else{
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             buscarRangoFechas(txtNombre.getText(), sdf.format(jDateChooser1.getDate()), sdf.format(jDateChooser2.getDate()));
+            resaltarfilastable resaltar = new resaltarfilastable();
+            tabla_reporte.setDefaultRenderer(Object.class, resaltar);
         }
         
         double sImportes;
@@ -415,7 +381,7 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
     
     void buscarRangoFechas(String nombre, String fecha1, String fecha2){
         DefaultTableModel modelo = new DefaultTableModel();
-       modelo.addColumn("NO");
+        modelo.addColumn("NO");
         modelo.addColumn("NOMBRE");
         modelo.addColumn("CARGO");
         modelo.addColumn("AREA");
@@ -423,10 +389,11 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
         modelo.addColumn("HORA DE SALIDA");
         modelo.addColumn("FECHA");
         modelo.addColumn("HORAS TRABAJADAS HH/MM/SS");
-        modelo.addColumn("PAGO DEL DÍA");
+        modelo.addColumn("PAGO DEL DÍA S/.");
         
 
-       tabla_reporte.setModel(modelo); 
+       tabla_reporte.setModel(modelo);
+              
         String consulta = "";
         
         //SELECT usuarios.nombre, usuarios.cargo, usuarios.area, asistencia.h_entrada, asistencia.h_salida, asistencia.fecha FROM usuarios JOIN asistencia WHERE usuarios.id_usuario = asistencia.id_usuario AND asistencia.id_usuario= usuarios.id_usuario AND asistencia.fecha BETWEEN '11-4-2020' AND '17-4-21'
@@ -495,7 +462,6 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnbuscar2;
-    private javax.swing.JComboBox<String> cbtipo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -513,7 +479,6 @@ public class ReportedeAsistencias extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tabla_reporte;
-    private javax.swing.JTextField txtBuscar;
     private javax.swing.JTextField txtMonto;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables

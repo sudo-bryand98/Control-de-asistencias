@@ -34,8 +34,8 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
         this.setLocationRelativeTo(null);
         h1 = new Thread(this);
         h1.start();
-         DefaultTableModel modelo = new DefaultTableModel();
-         modelo.addColumn("NUM. REGISTRO");
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("NUM. REGISTRO");
         modelo.addColumn("NOMBRE");
         modelo.addColumn("Hora de entrada ");
         modelo.addColumn("Hora de salida");
@@ -311,7 +311,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
            limpiartodo();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void limpiartodo(){
+    private void limpiartodo(){ // METODO PARA LIMPIAR TODOS LOS CAMPOS DE TEXTO, TABLA Y REINICIAR EL COMBOBOX
         llenartabla(" ", " ", " ");
         txtusuario.setText("");
         pscontraseña.setText("");
@@ -467,7 +467,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
         void registrarEntrada(){ //METODO QUE SE INVOCARA AL HACER CLICK EN EL BOTON REGISTRAR DE LA GUI
             // VALIDAR SI USUARIO YA REGISTRO UNA ENTRADA EN EL DIA - NO ES POSIBLE REGISTRAR 2 ENTRADA CON EL MISMO USUARIO EN UN SOLO DIA
             String consulta = "";
-            consulta = "SELECT * FROM asistencias.asistencia where h_entrada is not null and id_usuario = ?"; //QUERY QUE PERMITE VERIFICAR EN LA BD SI LA COLUMNA H_ENTRADA NO ESTA VACIA
+            consulta = "SELECT * FROM asistencias.asistencia where h_entrada is not null and id_usuario = ? and fecha = curdate()"; //QUERY QUE PERMITE VERIFICAR EN LA BD SI LA COLUMNA H_ENTRADA NO ESTA VACIA CON EL ID DEL USUARIO
             try {
                PreparedStatement pstm=reg.prepareCall(consulta);
                pstm.setString(1,String.valueOf(tabla_asistencoias.getValueAt(0, 0)));
@@ -477,8 +477,8 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                     limpiartodo(); // METODO QUE LIMPIA LOS TEXTFIELD Y LA TABLA
                     txtusuario.requestFocus();
                 }
-               else{
-                        String sql="INSERT INTO `asistencia` ( `h_entrada`, `h_salida`, `fecha`, `id_usuario`) VALUES (?, ?, ?, ?)" ;
+               else{ // SI NO HAY UN REGISTRO DE ENTRADA PREVIO EN EL DIA CON EL USUARIO EN CONSULTA, SE PROCEDE A REGISTRAR LA ASISTENCIA
+                        String sql="INSERT INTO `asistencia` ( `h_entrada`, `h_salida`, `fecha`, `id_usuario`) VALUES (?, ?, ?, ?)" ; // QUERY PARA REGISTRAR ENTRADA EN LA BD
                         try{      
                             PreparedStatement pst=reg.prepareCall(sql);  
                             pst.setString(1,String.valueOf(tabla_asistencoias.getValueAt(0, 2)));
@@ -503,26 +503,43 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                 Logger.getLogger(RegistrarUsuario.class.getName()).log(Level.SEVERE, null, e);
             }
             
-        }
+        } // FIN DE METODO PARA REGISTRAR ENTRADA DE USUARIO POR UNICA VEZ EN EL DIA
          void registrarSalida(){
+                
+                String query = "";
+                query = "SELECT * FROM asistencias.asistencia where h_salida = 'hora sin registrar' and id_usuario = ? and fecha = curdate()";
                 try {
-                    preparedStatement = reg.prepareStatement("UPDATE `asistencia` SET `h_salida` = ? WHERE `asistencia`.id_usuario= ? AND `asistencia`.`fecha` = ?");
-                    preparedStatement.setString(1, String.valueOf(tabla_asistencoias.getValueAt(0, 3)));
-                    preparedStatement.setInt(2, Integer.parseInt(String.valueOf(tabla_asistencoias.getValueAt(0, 0))));
-                    preparedStatement.setString(3, String.valueOf(tabla_asistencoias.getValueAt(0, 4)));
-                    int res = preparedStatement.executeUpdate();
+                        PreparedStatement pstmt=reg.prepareCall(query);
+                        pstmt.setString(1,String.valueOf(tabla_asistencoias.getValueAt(0, 0)));
+                        ResultSet rst = pstmt.executeQuery();
+                         if(rst.next()){
+                             try {
+                                    preparedStatement = reg.prepareStatement("UPDATE `asistencia` SET `h_salida` = ? WHERE `asistencia`.id_usuario= ? AND `asistencia`.`fecha` = ?");
+                                    preparedStatement.setString(1, String.valueOf(tabla_asistencoias.getValueAt(0, 3)));
+                                    preparedStatement.setInt(2, Integer.parseInt(String.valueOf(tabla_asistencoias.getValueAt(0, 0))));
+                                    preparedStatement.setString(3, String.valueOf(tabla_asistencoias.getValueAt(0, 4)));
+                                    int res = preparedStatement.executeUpdate();
 
-                    if (res > 0) {
-                        JOptionPane.showMessageDialog(null, "Salida registrada correctamente");
+                                        if (res > 0) {
+                                            JOptionPane.showMessageDialog(null, "Salida registrada correctamente");
 
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Error al registrar salida");
+                                        } else {
+                                            JOptionPane.showMessageDialog(null, "Error al registrar salida, no hay registro de hora de entrada con este usuario el día de hoy en la base de datos");
+                                            limpiartodo();
+                                        }
 
-                    }
-
-                } catch (SQLException | NumberFormatException | HeadlessException ex) {
-                    System.out.println(ex);
-                }
-            }
-    //
+                                } catch (SQLException | NumberFormatException | HeadlessException ex) {
+                                    System.out.println(ex);
+                                }                             
+                         }
+                         else{
+                             JOptionPane.showMessageDialog(null, "Este usuario ya ha registrado una salida el día de hoy en la base de datos, no es posible registrar otra en el día");
+                             limpiartodo(); // METODO QUE LIMPIA LOS TEXTFIELD Y LA TABLA
+                             txtusuario.requestFocus();
+                         }
+             } catch (Exception e) {
+                 Logger.getLogger(RegistrarUsuario.class.getName()).log(Level.SEVERE, null, e);
+             }
+                   
+        }
 }
