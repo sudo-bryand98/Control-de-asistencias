@@ -424,7 +424,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
         Calendar calendario = new GregorianCalendar();
         Date fechahora= new Date();
         SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-         SimpleDateFormat forhora = new SimpleDateFormat("hh:mm:ss");
+        SimpleDateFormat forhora = new SimpleDateFormat("HH:mm:ss", Locale.UK);
         calendario.setTime(fechahora);
         ampm = calendario.get(Calendar.AM_PM)== Calendar.AM?"AM":"PM";
         fecha= formato.format(fechahora);
@@ -433,14 +433,14 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
         hora= forhora.format(fechahora) ;
        
     }
-        void llenartabla(String usuario, String contrase,String es){
+    
+    void llenartabla(String usuario, String contrase,String es){
             DefaultTableModel modelo = new DefaultTableModel();
             modelo.addColumn("NUM. REGISTRO");
             modelo.addColumn("NOMBRE");
             modelo.addColumn("Hora de entrada ");
             modelo.addColumn("Hora de salida");
             modelo.addColumn("fecha");
-
 
            tabla_asistencoias.setModel(modelo);
             String sql = "";
@@ -450,8 +450,6 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
             try {
                 Statement st = reg.createStatement();
                 ResultSet rs = st.executeQuery(sql);
-
-
 
                 while (rs.next()) {
                     datos[0] = rs.getString(1);

@@ -13,16 +13,17 @@ import javax.swing.JOptionPane;
 
 public class conexion {
     Connection con=null;
-    Propiedades properties = new Propiedades();
+    Propiedades properties = new Propiedades(); // CREANDO INSTANCIA DE LA CLASE PROPIEDADES
     public Connection  conexion() { 
     try{
-        Properties propiedades = properties.cargarArchivoProperties();
-        Class.forName("com.mysql.cj.jdbc.Driver");
-//        con=DriverManager.getConnection("jdbc:mysql://localhost/asistencias?serverTimezone=UTC","root","Mysql");
-        String url= propiedades.getProperty("conexion.url");
-        String user = propiedades.getProperty("conexion.user");
-        String password = propiedades.getProperty("conexion.password");
-        con = DriverManager.getConnection(url,user,password);
+        Properties propiedades = properties.cargarArchivoProperties(); //OBTENIENDO EL METODO PARA CARGAR EL ARCHIVO PROPERTIES DE LA CLASE PROPIEDADES 
+        Class.forName("com.mysql.cj.jdbc.Driver"); // DRIVER DE CONEXION A LA BD EN MYSQL VER 8
+        //OBTENIENDO ATRIBUTOS DEL ARCHIVO PROPERTIES PARA LA CONEXION CON LA BD
+        String url= propiedades.getProperty("conexion.url"); // OBTENIENDO LA URL DE LA CONEXION DE LA BD
+        String user = propiedades.getProperty("conexion.user"); // OBTENIENDO EL USUARIO DE MYSQL
+        String password = propiedades.getProperty("conexion.password"); // OBTENIENDO LA CONTRASEÑA DEL USUARIO MYSQL
+        //FIN DE OBTENCION DE ATRIBUTOS DEL ARCHIVO PROPERTIES
+        con = DriverManager.getConnection(url,user,password); // ENVIANDO LOS VALORES OBTENIDOS DEL ARCHIVO PROPERTIES A LA CONEXION CON LA BD
         System.out.println("conexion establecida");
     }  catch (ClassNotFoundException e ) { 
            System.out.println("error de conexion"+e);

@@ -71,7 +71,7 @@ public final class LogIn extends javax.swing.JFrame {
             }
 
             if ((!cap.equals("DIRECTOR")) && (!cap.equals("COORDINADOR")) && (!cap.equals("USUARIO_COMUN"))) {
-                JOptionPane.showMessageDialog(null, "Los datos ingresados son incorrectos intente nuevamente.");
+                JOptionPane.showMessageDialog(null, "Los datos ingresados son incorrectos intente nuevamente.", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
                 LogIn ver = new LogIn();
                 ver.setVisible(true);
             }
