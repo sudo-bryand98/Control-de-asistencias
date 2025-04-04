@@ -38,16 +38,15 @@ public class GestiondeUsuarios extends javax.swing.JFrame {
         modelo.addColumn("USUARIO");
         modelo.addColumn("CONTRASEÑA");
         modelo.addColumn("SUELDO X HORA");
-        modelo.addColumn("ACCESO");
-        
+        modelo.addColumn("ACCESO");       
 
        tabla_usuarios.setModel(modelo);
         String sql = "";       
         if (valor.equals("")) {
-            sql = "SELECT * FROM  usuarios where id_usuario !=1";
+            sql = "SELECT * FROM  usuarios where id_usuario !=1 and estado='ACTIVO'";
         } else {
             
-            sql = "SELECT * FROM usuarios WHERE nombre LIKE '%"+valor+"%'";
+            sql = "SELECT * FROM usuarios WHERE nombre LIKE '%"+valor+"%' and estado='ACTIVO'";
         }
 
         String[] datos = new String[10];
@@ -124,8 +123,8 @@ public class GestiondeUsuarios extends javax.swing.JFrame {
     }
     void eliminar(){
     try {
-         
-            preparedStatement = reg.prepareStatement("DELETE FROM usuarios WHERE id_usuario=?");
+            String delete = "UPDATE usuarios SET estado='ELIMINADO' WHERE id_usuario=?";
+            preparedStatement = reg.prepareStatement(delete);
             preparedStatement.setInt(1, Integer.parseInt(id.getText()));
             int res = preparedStatement.executeUpdate();
             llenartabla("");
@@ -138,7 +137,6 @@ public class GestiondeUsuarios extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(null, "Error al Eliminar");
             }
-            connection.close();
         } catch (SQLException | NumberFormatException | HeadlessException ex) {
             System.out.println(ex);
         }
@@ -750,7 +748,7 @@ public class GestiondeUsuarios extends javax.swing.JFrame {
     private javax.swing.JTextField txt_sueldo;
     private javax.swing.JTextField txt_usuario;
     // End of variables declaration//GEN-END:variables
-Connection connection;
+    Connection connection;
     PreparedStatement preparedStatement;
     ResultSet resultSet;
     conexion con=new conexion();

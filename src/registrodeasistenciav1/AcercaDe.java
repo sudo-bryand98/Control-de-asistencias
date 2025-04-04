@@ -74,7 +74,7 @@ public class AcercaDe extends javax.swing.JFrame {
         jLabel3.setText("SISTEMA DE GESTIÓN DE ASISTENCIA");
 
         jLabel4.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
-        jLabel4.setText("Ver. 1.0.0");
+        jLabel4.setText("Ver. 1.0.1");
 
         jLabel5.setFont(new java.awt.Font("Yu Gothic UI", 1, 14)); // NOI18N
         jLabel5.setText("AUTOR Y SOPORTE");

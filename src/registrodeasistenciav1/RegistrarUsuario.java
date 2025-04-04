@@ -43,7 +43,7 @@ public class RegistrarUsuario extends javax.swing.JFrame {
     cbx_acceso.setSelectedIndex(0);
 }
     void registrar_usuario(){
-     String sql="INSERT INTO usuarios (nombre, edad, sexo, cargo, area, usuario, contrasenia, sueldo ,acceso) VALUES(?,?,?,?,?,?,?,?,?)" ;
+     String sql="INSERT INTO usuarios (nombre, edad, sexo, cargo, area, usuario, contrasenia, sueldo ,acceso, estado) VALUES(?,?,?,?,?,?,?,?,?,'ACTIVO')" ;
         try{       
         PreparedStatement pst=reg.prepareCall(sql);  
         pst.setString(1,txt_nombre.getText() );
@@ -56,7 +56,6 @@ public class RegistrarUsuario extends javax.swing.JFrame {
         pst.setString(8,txtsueldo.getText());
         pst.setString(9,cbx_acceso.getSelectedItem().toString());
         int n= pst.executeUpdate();
-        //tabla("");
                
         if(n>0){           
             JOptionPane.showMessageDialog(null,"EL USUARIO "+(txt_usuario.getText())+"\nCON CONTRASENIA "+(txt_contrasenia.getText())+"\nFUE REGISTRADO CON EXITO");
@@ -101,6 +100,7 @@ public class RegistrarUsuario extends javax.swing.JFrame {
         txtsueldo = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("PANEL REGISTRO DE USUARIOS");
         setIconImage( new ImageIcon(getClass().getResource("/Img/employees.png")).getImage());
         setResizable(false);
 

@@ -482,7 +482,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                pstm.setString(1,String.valueOf(tabla_asistencoias.getValueAt(0, 0)));
                ResultSet rs = pstm.executeQuery();
                 if(rs.next()){
-                    JOptionPane.showMessageDialog(null, "El usuario ya ha registrado una entrada el día de hoy en la base de datos, no es posible registrar otra en el día");
+                    JOptionPane.showMessageDialog(null, "El usuario ya ha registrado una entrada el día de hoy en la base de datos, no es posible registrar otra en el día", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
                     limpiartodo(); // METODO QUE LIMPIA LOS TEXTFIELD Y LA TABLA
                     txtusuario.requestFocus();
                 }
@@ -502,7 +502,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                                 JOptionPane.showMessageDialog(null,"Entrada Registrada correctamentre");
                             }
                             else{
-                                JOptionPane.showMessageDialog(null,"Error al registrar entrada" );
+                                JOptionPane.showMessageDialog(null,"Error al registrar entrada");
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(RegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
@@ -533,7 +533,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                                             JOptionPane.showMessageDialog(null, "Salida registrada correctamente");
 
                                         } else {
-                                            JOptionPane.showMessageDialog(null, "Error al registrar salida, no hay registro de hora de entrada con este usuario el día de hoy en la base de datos");
+                                            JOptionPane.showMessageDialog(null, "Error al registrar salida, no hay registro de hora de entrada con este usuario el día de hoy en la base de datos","ERROR", JOptionPane.ERROR_MESSAGE);
                                             limpiartodo();
                                         }
 
@@ -542,7 +542,7 @@ public class RegistrarAsistencia extends javax.swing.JFrame implements Runnable{
                                 }                             
                          }
                          else{
-                             JOptionPane.showMessageDialog(null, "Este usuario ya ha registrado una salida el día de hoy en la base de datos, no es posible registrar otra en el día");
+                             JOptionPane.showMessageDialog(null, "Este usuario ya ha registrado una salida el día de hoy en la base de datos, no es posible registrar otra en el día", "ADVERTENCIA", JOptionPane.WARNING_MESSAGE);
                              limpiartodo(); // METODO QUE LIMPIA LOS TEXTFIELD Y LA TABLA
                              txtusuario.requestFocus();
                          }
